@@ -40,9 +40,8 @@ img { max-width: 100%; display: block; }
 .zener { display: flex; gap: 16px; color: var(--madder); }
 .zener svg { width: 14px; height: 14px; }
 
-/* spiral thread divider */
-.thread { height: 18px; background: var(--madder); -webkit-mask: url(thread.svg) repeat-x center; mask: url(thread.svg) repeat-x center; opacity: .8; }
-.thread.flip { transform: scaleY(-1); }
+/* divider */
+.thread { height: 0; border-top: 1px solid var(--ink); opacity: .55; }
 .foot-thread { margin-top: 54px; }
 
 .menu { position: sticky; top: 0; z-index: 5; background: var(--paper) var(--grain); display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 22px; padding-block: 10px; font-size: 14px; }
