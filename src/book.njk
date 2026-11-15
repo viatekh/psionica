@@ -24,8 +24,8 @@ eleventyComputed:
     {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
   </dl>{% endif %}
   {% if book.status == 'stock' %}
-    <p class="ok big">In stock</p>
-    <p>Online buying opens soon. To reserve a copy now, write to <span class="sel">{{ site.email }}</span>.</p>
+    <p class="{% if book.price %}pr{% else %}ok{% endif %} big">{% if book.price %}{{ book.price | gbp }}{% else %}In stock{% endif %}</p>
+    <p>In stock. Online buying opens soon. To reserve it now, write to <span class="sel">{{ site.email }}</span>.</p>
   {% elif book.status == 'out' %}
     <p class="ns big">Out of stock</p>
     <p>Write to <span class="sel">{{ site.email }}</span> to be told when a copy comes in.</p>

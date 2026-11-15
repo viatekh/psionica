@@ -14,11 +14,11 @@
 <body>
 <div class="sheet">
 <header class="hd">
+  <a class="about" href="{{ '/about/' | url }}">About</a>
   <a href="{{ '/' | url }}" class="name">{% set cls = "mark" %}{% include "mark.njk" %}{% include "wordmark.njk" %}</a>
-  <span>CATALOGUE ONE · WINTER 2026</span>
 </header>
 <nav class="menu" aria-label="Shelves">
-  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">[{{ c.name | upper }}]</a> {% endfor %}<a href="{{ '/about/' | url }}">[ABOUT]</a>
+  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name }}</a>{% endfor %}
 </nav>
 <main>
 {{ content | safe }}

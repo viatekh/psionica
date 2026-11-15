@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { parse } from "csv-parse/sync";
 
 // Published CSVs from the Sheet (File > Share > Publish to web):
-//   SHEET_CSV_URL    the "Public" tab: copies that are listed or sold
+//   SHEET_CSV_URL    the "Public" tab: copies in stock, listed or sold
 //   CATALOGUE_CSV_URL  the "Public catalogue" tab: everything on the want list (title, author, section)
 // Without them, the build uses data/inventory.csv and data/catalogue.csv.
 const { SHEET_CSV_URL, CATALOGUE_CSV_URL } = process.env;
@@ -45,7 +45,7 @@ export default async function () {
   ]);
 
   const stocked = stockRows
-    .filter((r) => r.SKU && ["listed", "sold"].includes((r.Status || "").toLowerCase()))
+    .filter((r) => r.SKU && ["listed", "in stock", "sold"].includes((r.Status || "").toLowerCase()))
     .map((r) => ({
       id: r.SKU.toLowerCase(),
       sku: r.SKU,
@@ -57,7 +57,7 @@ export default async function () {
       condition: r.Condition,
       price: r.Price,
       format: r.Format,
-      status: r.Status.toLowerCase(),
+      status: r.Status.toLowerCase() === "in stock" ? "stock" : r.Status.toLowerCase(),
       image: photo(r.Photo_URL) || r.Cover_URL,
       blurb: r.Blurb,
       buy: r.Stripe_Link,
