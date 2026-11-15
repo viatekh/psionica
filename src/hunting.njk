@@ -1,0 +1,10 @@
+---
+layout: base.njk
+title: Hunting
+description: Books and magazines Psionica is looking for.
+permalink: /hunting/
+---
+{% from "card.njk" import huntbox %}
+<section class="sec first">
+  {{ huntbox(inventory.hunting, site, "What we're looking for. If it's here, we don't have it yet.") }}
+</section>

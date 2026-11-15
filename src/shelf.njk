@@ -3,15 +3,16 @@ layout: base.njk
 pagination:
   data: inventory.categories
   size: 1
-  alias: shelf
-permalink: "/shelf/{{ shelf.slug }}/"
+  alias: cat
+permalink: "/shelf/{{ cat.slug }}/"
 eleventyComputed:
-  title: "{{ shelf.name }}"
+  title: "{{ cat.name }}"
+  description: "{{ cat.note }}"
 ---
-{% from "card.njk" import entries %}
-<section class="sec">
-  <h1>{{ shelf.name | upper }}</h1>
-  <p class="count">{{ shelf.available }} in stock{% if shelf.items.length > shelf.available %}, {{ shelf.items.length - shelf.available }} wanted{% endif %}.</p>
-  {{ entries(shelf.entries) }}
+{% from "card.njk" import shelf, huntbox %}
+<section class="sec first">
+  <div class="sec-head"><h1>{{ cat.name }}</h1>{% if cat.note %}<p>{{ cat.note }}</p>{% endif %}<span class="count">{{ cat.forSale.length }} in stock</span></div>
+  {% if cat.forSale.length %}{{ shelf(cat.forSale) }}{% else %}<p class="empty">Nothing on this shelf right now.</p>{% endif %}
 </section>
-<p><a href="{{ '/' | url }}">&larr; Whole catalogue</a></p>
+{% if cat.hunting.length %}<section class="sec">{{ huntbox(cat.hunting, site, "Wanted for this shelf.") }}</section>{% endif %}
+{% if cat.sold.length %}<section class="sec"><div class="sec-head"><h2>Recently sold</h2></div>{{ shelf(cat.sold) }}</section>{% endif %}

@@ -9,35 +9,43 @@ eleventyComputed:
   title: "{{ book.title }}"
   description: "{{ book.title }}{% if book.author %} by {{ book.author }}{% endif %}, at Psionica."
 ---
-<article class="rec">
-  <div class="bigcov">{% if book.image %}<img src="{{ book.image | asset }}" alt="Cover of {{ book.title }}">{% else %}<span class="label"><span>{{ book.title }}</span>{% if book.author %}<span class="la">{{ book.author }}</span>{% endif %}</span>{% endif %}</div>
+{% from "card.njk" import shelf %}
+<p class="crumb"><a href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">{{ book.category | replace(" and ", " & ") }}</a></p>
+<article class="item">
+  <div class="cover">
+    {% if book.image %}<img src="{{ book.image | asset }}" alt="Cover of {{ book.title }}">{% else %}<span class="label"><span>{{ book.title }}</span>{% if book.author %}<span class="la">{{ book.author }}</span>{% endif %}</span>{% endif %}
+    {% if (book.status == 'stock' or book.status == 'listed') and book.price %}<span class="stamp lg">{{ book.price | gbp }}</span>{% endif %}
+  </div>
   <div class="body">
-  <p class="no"><a href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">{{ book.category | upper }}</a></p>
-  {% if book.author %}<p class="au">{{ book.author | upper }}</p>{% endif %}
-  <h1>{{ book.title }}</h1>
-  {% if book.blurb %}<p>{{ book.blurb }}</p>{% endif %}
-  {% if book.year or book.format or book.condition or book.isbn or book.sku %}<dl class="fields">
-    {% if book.year %}<dt>Year</dt><dd>{{ book.year }}</dd>{% endif %}
-    {% if book.format %}<dt>Format</dt><dd>{{ book.format | capitalize }}</dd>{% endif %}
-    {% if book.condition %}<dt>Condition</dt><dd>{{ book.condition }}</dd>{% endif %}
-    {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
-    {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
-  </dl>{% endif %}
-  {% if book.status == 'stock' %}
-    <p class="{% if book.price %}pr{% else %}ok{% endif %} big">{% if book.price %}{{ book.price | gbp }}{% else %}In stock{% endif %}</p>
-    {% if book.price == 'POA' %}<p>Price on application: it's rare. Write to <span class="sel">{{ site.email }}</span> for a price and photos.</p>
-    {% else %}<p>In stock. Online buying opens soon. To reserve it now, write to <span class="sel">{{ site.email }}</span>.</p>{% endif %}
-  {% elif book.status == 'out' %}
-    <p class="ns big">Out of stock</p>
-    <p>Write to <span class="sel">{{ site.email }}</span> to be told when a copy comes in.</p>
-  {% elif book.status == 'sold' %}
-    <p class="ns">Sold.</p>
-  {% else %}
-    <p class="pr big">{{ book.price | gbp }}</p>
-    {% if book.buy %}<p><a class="buy" href="{{ book.buy }}">[ BUY THIS COPY ]</a></p>
-    <p class="small">Card, Apple Pay or Google Pay through Stripe. UK postage added at checkout. One copy only.</p>
-    {% else %}<p class="small">Not yet for sale online. Ask at the stall.</p>{% endif %}
-  {% endif %}
+    <h1>{{ book.title }}</h1>
+    {% if book.author %}<p class="by">{{ book.author }}</p>{% endif %}
+    {% if book.blurb %}<p class="lede">{{ book.blurb }}</p>{% endif %}
+    {% if book.year or book.format or book.condition or book.isbn or book.sku %}<dl class="facts">
+      {% if book.year %}<dt>Published</dt><dd>{{ book.year }}</dd>{% endif %}
+      {% if book.format %}<dt>Format</dt><dd>{{ book.format | capitalize }}</dd>{% endif %}
+      {% if book.condition %}<dt>Condition</dt><dd>{{ book.condition }}</dd>{% endif %}
+      {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
+      {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
+    </dl>{% endif %}
+    {% set subject = (book.title + (' (' + book.sku + ')' if book.sku else '')) | urlencode %}
+    {% if book.status == 'listed' and book.buy %}
+      <div class="ask"><a class="btn" href="{{ book.buy }}">Buy this copy · {{ book.price | gbp }}</a></div>
+      <p class="small">Card, Apple Pay or Google Pay through Stripe. UK postage added at checkout. One copy only.</p>
+    {% elif book.status == 'stock' or book.status == 'listed' %}
+      <div class="ask"><a class="btn" href="mailto:{{ site.email }}?subject={{ subject }}">{% if book.price == 'POA' %}Ask about this copy{% else %}Reserve this copy{% endif %}</a><span class="sel">{{ site.email }}</span></div>
+      <p class="small">{% if book.price == 'POA' %}Price on application: it's rare. Write for a price and photos of the actual copy.{% else %}In stock. Online checkout opens soon; until then, write to reserve it.{% endif %}</p>
+    {% elif book.status == 'out' %}
+      <div class="ask"><a class="btn ghost" href="mailto:{{ site.email }}?subject={{ ('Wanted: ' + book.title) | urlencode }}">Tell me when it's in</a><span class="sel">{{ site.email }}</span></div>
+      <p class="small">We're hunting for this one. Have a copy to sell? Write to the same address.</p>
+    {% else %}
+      <p class="small">Sold.</p>
+    {% endif %}
   </div>
 </article>
-<p><a href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">&larr; {{ book.category }}</a></p>
+
+{% if book.also.length %}
+<section class="sec">
+  <div class="sec-head"><h2>Also on this shelf</h2></div>
+  {{ shelf(book.also) }}
+</section>
+{% endif %}

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "csv-parse/sync";
+import SHELVES from "./shelves.js";
 
 // Published CSVs from the Sheet (File > Share > Publish to web):
 //   SHEET_CSV_URL      the "Public" tab: copies in stock, listed or sold
@@ -10,22 +11,7 @@ const { SHEET_CSV_URL, CATALOGUE_CSV_URL } = process.env;
 const slug = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const key = (title) => slug(title || "").slice(0, 60);
 
-// Want-list sections are working headings; these are the shelf names shown on the site.
-const SHELVES = [
-  [/^esoteric/i, "Esoteric and occult"],
-  [/^myth/i, "Myth and mysticism"],
-  [/^goddess/i, "Goddess and earth-based"],
-  [/^psychedelic/i, "Psychedelics"],
-  [/^earth mysteries/i, "Earth mysteries"],
-  [/^art/i, "Art and visionary"],
-  [/rave|electronic|^velocity|^masala/i, "Rave and electronic music"],
-  [/cyber|sci-fi/i, "Cyberculture and sci-fi"],
-  [/^sound/i, "Sound and production"],
-  [/^fiction/i, "Fiction"],
-  [/^vhs|video/i, "VHS and video"],
-  [/^magazine/i, "Magazines"],
-];
-const shelfName = (section) => (SHELVES.find(([re]) => re.test(section || "")) || [null, section || "Other"])[1];
+const shelfName = (section) => (SHELVES.find((sh) => sh.match.test(section || "")) || { name: section || "Other" }).name;
 const byTitle = (a, b) => a.title.localeCompare(b.title, "en", { numeric: true });
 
 // Drive share links become direct thumbnail URLs
@@ -89,28 +75,45 @@ export default async function () {
     }));
 
   const books = [...stocked, ...wanted].map((b) => ({ ...b, categorySlug: slug(b.category) }));
-  const order = SHELVES.map(([, name]) => name);
+  const order = SHELVES.map((sh) => sh.name);
   const rank = (n) => (order.includes(n) ? order.indexOf(n) : order.length);
+
+  // The vault: rare things sold by enquiry (price "POA"). They lead the shop, so the home page
+  // shows them once, in the vault, and leaves them off their shelf there.
+  const isVault = (b) => b.status === "stock" && String(b.price).toUpperCase() === "POA";
+  const forSale = (b) => b.status === "listed" || b.status === "stock";
 
   const categories = [...new Set(books.map((b) => b.category))]
     .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
     .map((name) => {
-      const items = books.filter((b) => b.category === name);
-      const of = (...statuses) => items.filter((b) => statuses.includes(b.status)).sort(byTitle);
+      const items = books.filter((b) => b.category === name).sort(byTitle);
       return {
         name,
         slug: slug(name),
+        note: (SHELVES.find((sh) => sh.name === name) || {}).note,
         items,
-        available: of("listed", "stock").length,
-        // display order: for sale, then out of stock, then sold
-        entries: [...of("listed", "stock"), ...of("out"), ...of("sold")],
+        forSale: items.filter(forSale),
+        home: items.filter((b) => forSale(b) && !isVault(b)),
+        hunting: items.filter((b) => b.status === "out"),
+        sold: items.filter((b) => b.status === "sold"),
       };
     });
+
+  // "Also on this shelf": up to six neighbours, things you can buy first.
+  for (const c of categories) {
+    for (const b of c.items) {
+      b.also = [...c.forSale, ...c.hunting]
+        .filter((o) => o.id !== b.id)
+        .slice(0, 6)
+        .map(({ id, title, author, image, price, status }) => ({ id, title, author, image, price, status }));
+    }
+  }
 
   return {
     books,
     categories,
+    vault: books.filter(isVault).sort(byTitle),
+    hunting: books.filter((b) => b.status === "out").sort(byTitle),
     skus: books.filter((b) => b.sku), // for the short /p/<sku>/ addresses printed on stickers
-    inStock: books.filter((b) => b.status === "listed" || b.status === "stock"),
   };
 }

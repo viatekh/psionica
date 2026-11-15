@@ -1,9 +1,18 @@
-{% macro entries(list) %}
-<ol class="grid">
-  {% for b in list %}<li class="{{ b.status }}"><a href="{{ ('/book/' + b.id + '/') | url }}">
-    <span class="cov">{% if b.image %}<img src="{{ b.image | asset }}" alt="" loading="lazy">{% else %}<span class="label"><span>{{ b.title }}</span>{% if b.author %}<span class="la">{{ b.author }}</span>{% endif %}</span>{% endif %}</span>
-    <span class="txt">{% if b.author %}<span class="au">{{ b.author | upper }}</span>{% endif %}<span class="ti">{{ b.title }}</span>
-    {% if b.status == 'listed' %}<span class="pr">{{ b.price | gbp }}</span>{% elif b.status == 'sold' %}<span class="ns">Sold</span>{% elif b.status == 'out' %}<span class="ns">Out of stock</span>{% elif b.price %}<span class="pr">{{ b.price | gbp }}</span>{% else %}<span class="ok">In stock</span>{% endif %}</span>
+{# Books standing on a shelf line. `status` text: price, POA, In stock, Wanted or Sold. #}
+{% macro shelf(list) %}
+<ul class="shelf">
+  {% for b in list %}<li class="bk {{ b.status }}" data-price="{{ b.price | num }}"{% if b.price == 'POA' %} data-poa{% endif %}><a href="{{ ('/book/' + b.id + '/') | url }}">
+    <span class="c">{% if b.image %}<img src="{{ b.image | asset }}" alt="" loading="lazy">{% else %}<span class="label"><span>{{ b.title }}</span>{% if b.author %}<span class="la">{{ b.author }}</span>{% endif %}</span>{% endif %}</span>
+    <span class="t">{% if b.author %}<span class="au">{{ b.author }}</span>{% endif %}<span class="ti">{{ b.title }}</span>
+    <span class="pr">{% if b.status == 'sold' %}Sold{% elif b.status == 'out' %}Wanted{% elif b.price %}{{ b.price | gbp }}{% else %}In stock{% endif %}</span></span>
   </a></li>{% endfor %}
-</ol>
+</ul>
+{% endmacro %}
+
+{% macro huntbox(list, site, intro) %}
+<div class="hunt-box">
+  <div class="sec-head"><h2>Hunting</h2><p>{{ intro }}</p></div>
+  {{ shelf(list) }}
+  <p class="sell">Got one? We'll buy it. Write to <span class="sel">{{ site.email }}</span> with a photo and what you'd like for it.</p>
+</div>
 {% endmacro %}

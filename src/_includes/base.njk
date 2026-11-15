@@ -20,18 +20,31 @@
 </head>
 <body>
 <div class="sheet">
-<header class="hd">
-  <a class="about" href="{{ '/about/' | url }}">About</a>
-  <a href="{{ '/' | url }}" class="name">{% set cls = "mark" %}{% include "mark.njk" %}{% include "wordmark.njk" %}</a>
+<header class="hero">
+  <div class="crown">
+    <a class="side" href="{{ '/about/' | url }}">{% heading "About" %}</a>
+    <a href="{{ '/' | url }}" aria-label="{{ site.name }}, home">{% set cls = "mark" %}{% include "mark.njk" %}</a>
+    <a class="side" href="{{ '/about/' | url }}#where">{% heading "Events" %}</a>
+  </div>
+  <a href="{{ '/' | url }}" class="name" aria-label="{{ site.name }}, home">{% include "wordmark.njk" %}</a>
+  {% include "zener.njk" %}
 </header>
+<div class="thread" aria-hidden="true"></div>
 <nav class="menu" aria-label="Shelves">
-  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name }}</a>{% endfor %}
+  <a href="{{ '/' | url }}"{% if page.url == '/' %} class="on"{% endif %}>Everything</a>
+  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}"{% if page.url == '/shelf/' + c.slug + '/' %} class="on"{% endif %}>{{ c.name | replace(" and ", " & ") }}</a>{% endfor %}
+  {% if inventory.hunting.length %}<a class="hunt{% if page.url == '/hunting/' %} on{% endif %}" href="{{ '/hunting/' | url }}">Hunting</a>{% endif %}
 </nav>
+<div class="thread flip" aria-hidden="true"></div>
 <main>
 {{ content | safe }}
 </main>
-<footer class="ft">
-  <p>— {{ site.name }}. {{ site.tagline }}. Secondhand, one copy of each unless stated. Posted from the UK by Royal Mail. —</p>
+<div class="thread foot-thread" aria-hidden="true"></div>
+<footer class="foot">
+  <div>{% set cls = "fm" %}{% include "mark.njk" %}<p>{{ site.name }}. {{ site.tagline }}.</p></div>
+  <div><h3>Next stall</h3><p>None booked yet. Dates will appear on the <a href="{{ '/about/' | url }}#where">events page</a>.</p></div>
+  <div><h3>Postage</h3><p>Royal Mail within two working days, in board-backed mailers. UK only for now.</p></div>
+  <div><h3>Write to us</h3><p><span class="sel">{{ site.email }}</span><br>Curated with love by Sybil and Tekh.</p></div>
 </footer>
 </div>
 </body>

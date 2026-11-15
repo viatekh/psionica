@@ -1,14 +1,50 @@
 ---
 layout: base.njk
 ---
-{% from "card.njk" import entries %}
-<div class="intro">
-  <p>Got one to sell, or want one we haven't listed? Write to <span class="sel">{{ site.email }}</span>.</p>
+{% from "card.njk" import shelf, huntbox %}
+<div class="filters" role="group" aria-label="Filter books"><span>Show</span>
+  <button type="button" data-f="all" aria-pressed="true">Everything</button>
+  <button type="button" data-f="cheap" aria-pressed="false">Under £10</button>
+  <button type="button" data-f="rare" aria-pressed="false">Rare, £50 and up</button>
 </div>
 
-{% for c in inventory.categories %}
-<section class="sec" id="{{ c.slug }}">
-  <h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name | upper }}</a> <span>{{ c.available }} in stock</span></h2>
-  {{ entries(c.entries) }}
+{% for c in inventory.categories %}{% if c.home.length %}
+<section class="sec filterable" id="{{ c.slug }}">
+  <div class="sec-head"><h2>{{ c.name }}</h2>{% if c.note %}<p>{{ c.note }}</p>{% endif %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">Whole shelf &rarr;</a></div>
+  {{ shelf(c.home) }}
 </section>
-{% endfor %}
+{% endif %}{% endfor %}
+<p class="empty" id="none" hidden>Nothing matches that filter right now.</p>
+
+{% if inventory.hunting.length %}
+<section class="sec" id="hunting">
+  {{ huntbox(inventory.hunting, site, "What we're looking for. If it's here, we don't have it yet.") }}
+</section>
+{% endif %}
+
+{% if inventory.vault.length %}
+<section class="sec" id="vault">
+  <div class="sec-head"><h2>From the vault</h2><p>The rare ones. {{ inventory.vault.length }} items, all price on application.</p></div>
+  <div class="vault">
+    <div class="fan-scroll"><div class="fan">
+      {% for b in inventory.vault %}{% if b.image %}<a href="{{ ('/book/' + b.id + '/') | url }}" title="{{ b.title }}" style="--r:{{ (loop.index0 - (inventory.vault.length - 1) / 2) * 2 }}deg"><img src="{{ b.image | asset }}" alt="{{ b.title }}" loading="lazy"></a>{% endif %}{% endfor %}
+    </div></div>
+    <div class="vault-foot"><span>Write to <span class="sel">{{ site.email }}</span> for prices and photos.</span><span class="stamp sm">POA</span></div>
+  </div>
+</section>
+{% endif %}
+
+<script>
+const buttons = [...document.querySelectorAll(".filters button")];
+const tests = { all: () => true, cheap: (c) => c.dataset.price > 0 && c.dataset.price < 10, rare: (c) => c.dataset.price >= 50 || "poa" in c.dataset };
+buttons.forEach((b) => b.addEventListener("click", () => {
+  buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  let total = 0;
+  document.querySelectorAll(".filterable").forEach((sec) => {
+    let shown = 0;
+    sec.querySelectorAll(".bk").forEach((c) => { const ok = tests[b.dataset.f](c); c.hidden = !ok; shown += ok; });
+    sec.hidden = !shown; total += shown;
+  });
+  document.getElementById("none").hidden = total > 0;
+}));
+</script>
