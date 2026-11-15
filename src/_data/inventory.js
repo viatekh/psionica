@@ -20,6 +20,8 @@ const SHELVES = [
   [/^art/i, "Art and visionary"],
   [/rave|electronic/i, "Rave and electronic music"],
   [/cyber|sci-fi/i, "Cyberculture and sci-fi"],
+  [/^sound/i, "Sound and production"],
+  [/^fiction/i, "Fiction"],
   [/^velocity/i, "Rave and electronic music"],
   [/^masala/i, "Rave and electronic music"],
   [/^vhs|video/i, "VHS and video"],
