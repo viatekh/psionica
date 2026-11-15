@@ -91,8 +91,8 @@ export default async function () {
         items,
         listed: items.filter((b) => b.status === "listed"),
         sold: items.filter((b) => b.status === "sold"),
-        stock: items.filter((b) => b.status === "stock").sort((a, b) => a.title.localeCompare(b.title)),
-        out: items.filter((b) => b.status === "out").sort((a, b) => a.title.localeCompare(b.title)),
+        stock: items.filter((b) => b.status === "stock").sort((a, b) => a.title.localeCompare(b.title, "en", { numeric: true })),
+        out: items.filter((b) => b.status === "out").sort((a, b) => a.title.localeCompare(b.title, "en", { numeric: true })),
       };
     });
 
