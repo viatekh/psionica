@@ -11,7 +11,7 @@ eleventyComputed:
 {% from "card.njk" import entries %}
 <section class="sec">
   <h1>{{ shelf.name | upper }}</h1>
-  <p class="count">{{ shelf.items.length }} titles. {{ shelf.listed.length }} in stock.</p>
+  <p class="count">{{ shelf.items.length }} titles.</p>
   {{ entries(shelf.entries) }}
 </section>
 <p><a href="{{ '/' | url }}">&larr; Whole catalogue</a></p>

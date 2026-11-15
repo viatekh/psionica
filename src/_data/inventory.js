@@ -63,16 +63,16 @@ export default async function () {
       buy: r.Stripe_Link,
     }));
 
-  // Everything else on the want list shows as a catalogue entry with no copy in stock.
+  // Want-list titles marked "in stock" that have no priced Inventory row yet: on the site, no buy button.
   const have = new Set(stocked.map((b) => key(b.title)));
   const ids = new Set();
   const wanted = wantRows
-    .filter((r) => r.Title && !have.has(key(r.Title)))
+    .filter((r) => r.Title && (r.Status || "").toLowerCase() === "in stock" && !have.has(key(r.Title)))
     .map((r) => {
       let id = slug(`${r.Title} ${r.Author || ""}`).slice(0, 70).replace(/-$/, "");
       while (ids.has(id)) id += "-2";
       ids.add(id);
-      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: "none", image: r.Cover_URL };
+      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: "stock", image: r.Cover_URL };
     });
 
   const books = [...stocked, ...wanted].map((b) => ({ ...b, categorySlug: slug(b.category) }));
@@ -89,16 +89,16 @@ export default async function () {
         items,
         listed: items.filter((b) => b.status === "listed"),
         sold: items.filter((b) => b.status === "sold"),
-        wanted: items.filter((b) => b.status === "none").sort((a, b) => a.title.localeCompare(b.title)),
+        stock: items.filter((b) => b.status === "stock").sort((a, b) => a.title.localeCompare(b.title)),
       };
     });
 
-  // Catalogue numbers run through the whole list in display order: in stock, wanted, then sold.
+  // Catalogue numbers run through the whole list in display order: for sale, in stock, then sold.
   let no = 0;
   for (const c of categories) {
-    c.entries = [...c.listed, ...c.wanted, ...c.sold];
+    c.entries = [...c.listed, ...c.stock, ...c.sold];
     for (const b of c.entries) b.no = ++no;
   }
 
-  return { books, categories, total: books.length, inStock: books.filter((b) => b.status === "listed") };
+  return { books, categories, total: books.length, inStock: books.filter((b) => b.status !== "sold") };
 }

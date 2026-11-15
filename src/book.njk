@@ -23,9 +23,9 @@ eleventyComputed:
     {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
     {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
   </dl>{% endif %}
-  {% if book.status == 'none' %}
-    <p class="ns">Wanted. Not in stock.</p>
-    <p>We're looking for a copy. Write to <span class="sel">{{ site.email }}</span> to be told when one turns up, or if you have one to sell.</p>
+  {% if book.status == 'stock' %}
+    <p class="ok big">In stock</p>
+    <p>Online buying opens soon. To reserve a copy now, write to <span class="sel">{{ site.email }}</span>.</p>
   {% elif book.status == 'sold' %}
     <p class="ns">Sold.</p>
   {% else %}

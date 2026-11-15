@@ -8,7 +8,7 @@ layout: base.njk
 
 {% for c in inventory.categories %}
 <section class="sec" id="{{ c.slug }}">
-  <h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name | upper }}</a> <span>{{ c.items.length }} titles · {{ c.listed.length }} in stock</span></h2>
+  <h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name | upper }}</a> <span>{{ c.items.length }} titles</span></h2>
   {{ entries(c.entries) }}
 </section>
 {% endfor %}
