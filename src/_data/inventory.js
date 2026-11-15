@@ -72,7 +72,7 @@ export default async function () {
       let id = slug(`${r.Title} ${r.Author || ""}`).slice(0, 70).replace(/-$/, "");
       while (ids.has(id)) id += "-2";
       ids.add(id);
-      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: "none" };
+      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: "none", image: r.Cover_URL };
     });
 
   const books = [...stocked, ...wanted].map((b) => ({ ...b, categorySlug: slug(b.category) }));

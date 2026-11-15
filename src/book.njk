@@ -10,10 +10,11 @@ eleventyComputed:
   description: "{{ book.title }}{% if book.author %} by {{ book.author }}{% endif %}, at Psionica."
 ---
 <article class="rec">
+  <div class="bigcov">{% if book.image %}<img src="{{ book.image }}" alt="Cover of {{ book.title }}">{% else %}<span class="label"><span>{{ book.title }}</span>{% if book.author %}<span class="la">{{ book.author }}</span>{% endif %}</span>{% endif %}</div>
+  <div class="body">
   <p class="no">No. {{ book.no }} · <a href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">{{ book.category | upper }}</a></p>
   {% if book.author %}<p class="au">{{ book.author | upper }}.</p>{% endif %}
   <h1>{{ book.title }}.</h1>
-  {% if book.image %}<img class="cov" src="{{ book.image }}" alt="Cover of {{ book.title }}">{% endif %}
   {% if book.blurb %}<p>{{ book.blurb }}</p>{% endif %}
   {% if book.year or book.format or book.condition or book.isbn or book.sku %}<pre class="fields">{% if book.year %}Year ........ {{ book.year }}
 {% endif %}{% if book.format %}Format ...... {{ book.format | capitalize }}
@@ -32,5 +33,6 @@ eleventyComputed:
     <p class="small">Card, Apple Pay or Google Pay through Stripe. UK postage added at checkout. One copy only.</p>
     {% else %}<p class="small">Not yet for sale online. Ask at the stall.</p>{% endif %}
   {% endif %}
+  </div>
 </article>
 <p><a href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">&larr; {{ book.category }}</a></p>
