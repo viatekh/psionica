@@ -22,6 +22,7 @@ const SHELVES = [
   [/cyber|sci-fi/i, "Cyberculture and sci-fi"],
   [/^velocity/i, "Velocity Press"],
   [/^masala/i, "Masala Noir"],
+  [/^vhs|video/i, "VHS and video"],
   [/^magazine/i, "Magazines"],
 ];
 const shelfName = (section) => (SHELVES.find(([re]) => re.test(section || "")) || [null, section || "Other"])[1];
