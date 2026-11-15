@@ -3,8 +3,7 @@ layout: base.njk
 ---
 {% from "card.njk" import entries %}
 <div class="intro">
-  <p>{{ site.tagline }}. A travelling shop: online here, and at stalls, parties and pop-ups.</p>
-  <p>{% if inventory.inStock.length %}{{ inventory.inStock.length }} items in stock.{% else %}Nothing in stock yet.{% endif %} The list below is everything we stock or are hunting for: {{ inventory.total }} titles. Each goes on sale here when we find a copy. Got one to sell, or want one we haven't listed? Write to <span class="sel">{{ site.email }}</span>.</p>
+  <p>Got one to sell, or want one we haven't listed? Write to <span class="sel">{{ site.email }}</span>.</p>
 </div>
 
 {% for c in inventory.categories %}

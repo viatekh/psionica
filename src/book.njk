@@ -16,12 +16,13 @@ eleventyComputed:
   {% if book.author %}<p class="au">{{ book.author | upper }}.</p>{% endif %}
   <h1>{{ book.title }}.</h1>
   {% if book.blurb %}<p>{{ book.blurb }}</p>{% endif %}
-  {% if book.year or book.format or book.condition or book.isbn or book.sku %}<pre class="fields">{% if book.year %}Year ........ {{ book.year }}
-{% endif %}{% if book.format %}Format ...... {{ book.format | capitalize }}
-{% endif %}{% if book.condition %}Condition ... {{ book.condition }}
-{% endif %}{% if book.isbn %}ISBN ........ {{ book.isbn }}
-{% endif %}{% if book.sku %}Ref ......... {{ book.sku }}
-{% endif %}</pre>{% endif %}
+  {% if book.year or book.format or book.condition or book.isbn or book.sku %}<dl class="fields">
+    {% if book.year %}<dt>Year</dt><dd>{{ book.year }}</dd>{% endif %}
+    {% if book.format %}<dt>Format</dt><dd>{{ book.format | capitalize }}</dd>{% endif %}
+    {% if book.condition %}<dt>Condition</dt><dd>{{ book.condition }}</dd>{% endif %}
+    {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
+    {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
+  </dl>{% endif %}
   {% if book.status == 'none' %}
     <p class="ns">Wanted. Not in stock.</p>
     <p>We're looking for a copy. Write to <span class="sel">{{ site.email }}</span> to be told when one turns up, or if you have one to sell.</p>
