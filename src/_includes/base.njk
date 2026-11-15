@@ -8,23 +8,24 @@
 <link rel="icon" href="{{ '/assets/favicon.svg' | url }}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Metamorphous&family=Alegreya:ital,wght@0,400;0,500;1,400&family=Alegreya+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
 <link rel="stylesheet" href="{{ '/assets/style.css' | url }}">
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="{{ '/' | url }}">{% set cls = "mark" %}{% include "mark.njk" %}Psionica</a>
-  <nav>
-    <a href="{{ '/' | url }}#shelves">Shelves</a>
-    <a href="{{ '/about/' | url }}">About &amp; events</a>
-  </nav>
+<div class="sheet">
+<header class="hd">
+  <a href="{{ '/' | url }}" class="name">{% set cls = "mark" %}{% include "mark.njk" %}PSIONICA</a>
+  <span>CATALOGUE ONE · WINTER 2026</span>
 </header>
+<nav class="menu" aria-label="Shelves">
+  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">[{{ c.name | upper }}]</a> {% endfor %}<a href="{{ '/about/' | url }}">[ABOUT]</a>
+</nav>
 <main>
 {{ content | safe }}
 </main>
-<footer class="foot">
-  <p>{{ site.name }} · {{ site.tagline }}</p>
-  <p>Secondhand, one copy of each unless stated. Posted from the UK by Royal Mail.</p>
+<footer class="ft">
+  <p>— {{ site.name }}. {{ site.tagline }}. Secondhand, one copy of each unless stated. Posted from the UK by Royal Mail. —</p>
 </footer>
+</div>
 </body>
 </html>

@@ -93,5 +93,12 @@ export default async function () {
       };
     });
 
-  return { books, categories, inStock: books.filter((b) => b.status === "listed") };
+  // Catalogue numbers run through the whole list in display order: in stock, wanted, then sold.
+  let no = 0;
+  for (const c of categories) {
+    c.entries = [...c.listed, ...c.wanted, ...c.sold];
+    for (const b of c.entries) b.no = ++no;
+  }
+
+  return { books, categories, total: books.length, inStock: books.filter((b) => b.status === "listed") };
 }

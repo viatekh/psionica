@@ -8,9 +8,10 @@ permalink: "/shelf/{{ shelf.slug }}/"
 eleventyComputed:
   title: "{{ shelf.name }}"
 ---
-{% from "card.njk" import card, entries %}
-<h1>{{ shelf.name }}</h1>
-<p class="lede">{{ shelf.listed.length }} in stock · {{ shelf.items.length }} titles on this shelf.</p>
-{% if shelf.listed.length %}<div class="grid">{% for b in shelf.listed %}{{ card(b) }}{% endfor %}</div>{% endif %}
-{% if shelf.wanted.length %}<section><h2>Not in stock</h2>{{ entries(shelf.wanted) }}</section>{% endif %}
-{% if shelf.sold.length %}<section><h2>Recently sold</h2><div class="grid">{% for b in shelf.sold %}{{ card(b) }}{% endfor %}</div></section>{% endif %}
+{% from "card.njk" import entries %}
+<section class="sec">
+  <h1>{{ shelf.name | upper }}</h1>
+  <p class="count">{{ shelf.items.length }} titles. {{ shelf.listed.length }} in stock.</p>
+  {{ entries(shelf.entries) }}
+</section>
+<p><a href="{{ '/' | url }}">&larr; Whole catalogue</a></p>

@@ -1,32 +1,15 @@
 ---
 layout: base.njk
 ---
-{% from "card.njk" import card, entries %}
-<section class="hero">
-  {% set cls = "hero-mark" %}{% include "mark.njk" %}
-  <div>
-    <h1>Psionica</h1>
-    <p class="lede">{{ site.tagline }}. A travelling shop: online here, and at stalls, parties and pop-ups.</p>
-  </div>
-</section>
-
-{% if inventory.inStock.length %}
-<section>
-  <h2>In stock</h2>
-  <div class="grid">{% for b in inventory.inStock %}{{ card(b) }}{% endfor %}</div>
-</section>
-{% else %}
-<p class="notice">Nothing in stock yet. The shelves below are what we're hunting for. Each title goes on sale here when we find a copy. Have one to sell, or want one we haven't listed? Email <span class="sel">{{ site.email }}</span>.</p>
-{% endif %}
-
-<nav class="shelves" id="shelves" aria-label="Shelves">
-  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name }} <span>{{ c.listed.length }} / {{ c.items.length }}</span></a>{% endfor %}
-</nav>
+{% from "card.njk" import entries %}
+<div class="intro">
+  <p>{{ site.tagline }}. A travelling shop: online here, and at stalls, parties and pop-ups.</p>
+  <p>{% if inventory.inStock.length %}{{ inventory.inStock.length }} items in stock.{% else %}Nothing in stock yet.{% endif %} The list below is everything we stock or are hunting for: {{ inventory.total }} titles. Each goes on sale here when we find a copy. Got one to sell, or want one we haven't listed? Write to <span class="sel">{{ site.email }}</span>.</p>
+</div>
 
 {% for c in inventory.categories %}
-<section class="shelf">
-  <h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name }}</a></h2>
-  {% if c.listed.length %}<div class="grid">{% for b in c.listed %}{{ card(b) }}{% endfor %}</div>{% endif %}
-  {{ entries(c.wanted) }}
+<section class="sec" id="{{ c.slug }}">
+  <h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name | upper }}</a></h2>
+  {{ entries(c.entries) }}
 </section>
 {% endfor %}
