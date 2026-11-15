@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if title %}{{ title }} · {% endif %}{{ site.name }}</title>
+<meta name="description" content="{{ description or site.tagline }}">
+<link rel="icon" href="{{ '/assets/favicon.svg' | url }}" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Metamorphous&family=Alegreya:ital,wght@0,400;0,500;1,400&family=Alegreya+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="{{ '/assets/style.css' | url }}">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="{{ '/' | url }}">{% set cls = "mark" %}{% include "mark.njk" %}Psionica</a>
+  <nav>
+    <a href="{{ '/' | url }}#shelves">Shelves</a>
+    <a href="{{ '/about/' | url }}">About &amp; events</a>
+  </nav>
+</header>
+{% if inventory.example %}<p class="example-note">Example stock. These rows come from a sample file, not the real inventory.</p>{% endif %}
+<main>
+{{ content | safe }}
+</main>
+<footer class="foot">
+  <p>{{ site.name }} · {{ site.tagline }}</p>
+  <p>Secondhand, one copy of each unless stated. Posted from the UK by Royal Mail.</p>
+</footer>
+</body>
+</html>

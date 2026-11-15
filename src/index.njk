@@ -1,0 +1,22 @@
+---
+layout: base.njk
+---
+{% from "card.njk" import card %}
+<section class="hero">
+  {% set cls = "hero-mark" %}{% include "mark.njk" %}
+  <div>
+    <h1>Psionica</h1>
+    <p class="lede">{{ site.tagline }}. A travelling shop: online here, and at stalls, parties and pop-ups.</p>
+  </div>
+</section>
+
+<nav class="shelves" id="shelves" aria-label="Shelves">
+  {% for c in inventory.categories %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name }} <span>{{ c.listed }}</span></a>{% endfor %}
+</nav>
+
+<section>
+  <h2>On the shelves</h2>
+  <div class="grid">
+    {% for b in inventory.books %}{% if b.status == 'listed' %}{{ card(b) }}{% endif %}{% endfor %}
+  </div>
+</section>

@@ -1,0 +1,17 @@
+---
+layout: base.njk
+pagination:
+  data: inventory.categories
+  size: 1
+  alias: shelf
+permalink: "/shelf/{{ shelf.slug }}/"
+eleventyComputed:
+  title: "{{ shelf.name }}"
+---
+{% from "card.njk" import card %}
+<h1>{{ shelf.name }}</h1>
+<p class="lede">{{ shelf.listed }} available{% if shelf.items.length > shelf.listed %}, plus recently sold{% endif %}.</p>
+<div class="grid">
+  {% for b in shelf.items %}{% if b.status == 'listed' %}{{ card(b) }}{% endif %}{% endfor %}
+  {% for b in shelf.items %}{% if b.status == 'sold' %}{{ card(b) }}{% endif %}{% endfor %}
+</div>

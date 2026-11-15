@@ -1,0 +1,34 @@
+---
+layout: base.njk
+pagination:
+  data: inventory.books
+  size: 1
+  alias: book
+permalink: "/book/{{ book.sku | lower }}/"
+eleventyComputed:
+  title: "{{ book.title }}"
+  description: "{{ book.title }}{% if book.author %} by {{ book.author }}{% endif %}, secondhand at Psionica."
+---
+<article class="book">
+  <div class="book-cover">{% if book.image %}<img src="{{ book.image }}" alt="Cover of {{ book.title }}">{% else %}<span class="nocover">{{ book.title }}</span>{% endif %}</div>
+  <div class="book-info">
+    <a class="crumb" href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">{{ book.category }}</a>
+    <h1>{{ book.title }}</h1>
+    {% if book.author %}<p class="by">{{ book.author }}{% if book.year %} · {{ book.year }}{% endif %}</p>{% endif %}
+    {% if book.blurb %}<p>{{ book.blurb }}</p>{% endif %}
+    <dl>
+      {% if book.condition %}<dt>Condition</dt><dd>{{ book.condition }}</dd>{% endif %}
+      {% if book.format %}<dt>Format</dt><dd>{{ book.format }}</dd>{% endif %}
+      {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
+      <dt>Ref</dt><dd>{{ book.sku }}</dd>
+    </dl>
+    {% if book.status == 'sold' %}
+      <p class="price">Sold</p>
+    {% else %}
+      <p class="price">{{ book.price | gbp }}</p>
+      {% if book.buy %}<a class="buy" href="{{ book.buy }}">Buy this copy</a>
+      <p class="small">Card or Apple / Google Pay through Stripe. UK postage added at checkout. One copy only: once it's bought, it's gone.</p>
+      {% else %}<p class="small">Not yet available online. Ask at the stall.</p>{% endif %}
+    {% endif %}
+  </div>
+</article>
