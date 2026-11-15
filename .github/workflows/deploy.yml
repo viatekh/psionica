@@ -31,6 +31,7 @@ jobs:
       - run: npx @11ty/eleventy
         env:
           SHEET_CSV_URL: ${{ vars.SHEET_CSV_URL }}
+          CATALOGUE_CSV_URL: ${{ vars.CATALOGUE_CSV_URL }}
           PATH_PREFIX: ${{ vars.PATH_PREFIX }}
       - uses: actions/upload-pages-artifact@v3
         with:

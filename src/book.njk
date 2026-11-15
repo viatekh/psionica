@@ -4,13 +4,13 @@ pagination:
   data: inventory.books
   size: 1
   alias: book
-permalink: "/book/{{ book.sku | lower }}/"
+permalink: "/book/{{ book.id }}/"
 eleventyComputed:
   title: "{{ book.title }}"
   description: "{{ book.title }}{% if book.author %} by {{ book.author }}{% endif %}, secondhand at Psionica."
 ---
-<article class="book">
-  <div class="book-cover">{% if book.image %}<img src="{{ book.image }}" alt="Cover of {{ book.title }}">{% else %}<span class="nocover">{{ book.title }}</span>{% endif %}</div>
+<article class="book{% if book.status == 'none' and not book.image %} bare{% endif %}">
+  {% if book.status != 'none' or book.image %}<div class="book-cover">{% if book.image %}<img src="{{ book.image }}" alt="Cover of {{ book.title }}">{% else %}<span class="nocover">{{ book.title }}</span>{% endif %}</div>{% endif %}
   <div class="book-info">
     <a class="crumb" href="{{ ('/shelf/' + book.categorySlug + '/') | url }}">{{ book.category }}</a>
     <h1>{{ book.title }}</h1>
@@ -20,9 +20,12 @@ eleventyComputed:
       {% if book.condition %}<dt>Condition</dt><dd>{{ book.condition }}</dd>{% endif %}
       {% if book.format %}<dt>Format</dt><dd>{{ book.format }}</dd>{% endif %}
       {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
-      <dt>Ref</dt><dd>{{ book.sku }}</dd>
+      {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
     </dl>
-    {% if book.status == 'sold' %}
+    {% if book.status == 'none' %}
+      <p class="price">Not in stock</p>
+      <p class="small">We're looking for a copy. Email <span class="sel">{{ site.email }}</span> to be told when one turns up, or if you have one to sell.</p>
+    {% elif book.status == 'sold' %}
       <p class="price">Sold</p>
     {% else %}
       <p class="price">{{ book.price | gbp }}</p>

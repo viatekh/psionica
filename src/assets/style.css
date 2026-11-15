@@ -77,3 +77,16 @@ dd { margin: 0; }
 .foot { border-top: 1px solid var(--line); padding-block: 24px 40px; font-family: var(--ui); font-size: 14px; color: var(--muted); }
 .foot p { margin: 0 0 4px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.notice { font-size: 19px; max-width: 62ch; margin: 0; padding: 16px 20px; border-left: 3px solid var(--accent); background: var(--surface); }
+.shelf h2 a { text-decoration: none; }
+.shelf h2 a:hover { color: var(--accent); }
+.shelf { display: grid; gap: 16px; }
+.entries { list-style: none; margin: 0; padding: 0; columns: 2 380px; column-gap: 40px; }
+.entries li { break-inside: avoid; border-bottom: 1px solid var(--line); }
+.entries a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 16px; padding: 8px 0; text-decoration: none; }
+.entries .t { font-weight: 500; }
+.entries .a { grid-column: 1; grid-row: 2; color: var(--muted); font-size: 16px; }
+.entries .s { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-family: var(--ui); font-size: 13px; color: var(--muted); white-space: nowrap; }
+.entries a:hover .t { color: var(--accent); }
+.book.bare { grid-template-columns: minmax(0, 1fr); }
