@@ -4,7 +4,7 @@ import SHELVES from "./shelves.js";
 
 // Published CSVs from the Sheet (File > Share > Publish to web):
 //   SHEET_CSV_URL      the "Public" tab: copies in stock, listed or sold
-//   CATALOGUE_CSV_URL  the "Public catalogue" tab: want-list titles marked in stock or out of stock
+//   CATALOGUE_CSV_URL  the "Public catalogue" tab: want-list titles marked in stock or wanted
 // Without them, the build uses data/inventory.csv and data/catalogue.csv (made by tools/sync-stock.py).
 const { SHEET_CSV_URL, CATALOGUE_CSV_URL } = process.env;
 
@@ -60,10 +60,10 @@ export default async function () {
       buy: r.Stripe_Link,
     }));
 
-  // Want-list titles marked "in stock" or "out of stock" that have no Inventory row. No price, no buy button.
+  // Want-list titles marked "in stock" or "wanted" that have no Inventory row. No price, no buy button.
   const have = new Set(stocked.map((b) => key(b.title)));
   const wanted = wantRows
-    .filter((r) => r.Title && ["in stock", "out of stock"].includes((r.Status || "").toLowerCase()) && !have.has(key(r.Title)))
+    .filter((r) => r.Title && ["in stock", "wanted"].includes((r.Status || "").toLowerCase()) && !have.has(key(r.Title)))
     .map((r) => ({
       id: pageId(r.Title, r.Author),
       title: r.Title,
