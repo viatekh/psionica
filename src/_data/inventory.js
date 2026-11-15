@@ -63,16 +63,16 @@ export default async function () {
       buy: r.Stripe_Link,
     }));
 
-  // Want-list titles marked "in stock" that have no priced Inventory row yet: on the site, no buy button.
+  // Want-list titles marked "in stock" or "out of stock" that have no priced Inventory row yet. No buy button.
   const have = new Set(stocked.map((b) => key(b.title)));
   const ids = new Set();
   const wanted = wantRows
-    .filter((r) => r.Title && (r.Status || "").toLowerCase() === "in stock" && !have.has(key(r.Title)))
+    .filter((r) => r.Title && ["in stock", "out of stock"].includes((r.Status || "").toLowerCase()) && !have.has(key(r.Title)))
     .map((r) => {
       let id = slug(`${r.Title} ${r.Author || ""}`).slice(0, 70).replace(/-$/, "");
       while (ids.has(id)) id += "-2";
       ids.add(id);
-      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: "stock", image: r.Cover_URL };
+      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: r.Status.toLowerCase() === "in stock" ? "stock" : "out", image: r.Cover_URL };
     });
 
   const books = [...stocked, ...wanted].map((b) => ({ ...b, categorySlug: slug(b.category) }));
@@ -90,15 +90,16 @@ export default async function () {
         listed: items.filter((b) => b.status === "listed"),
         sold: items.filter((b) => b.status === "sold"),
         stock: items.filter((b) => b.status === "stock").sort((a, b) => a.title.localeCompare(b.title)),
+        out: items.filter((b) => b.status === "out").sort((a, b) => a.title.localeCompare(b.title)),
       };
     });
 
-  // Catalogue numbers run through the whole list in display order: for sale, in stock, then sold.
+  // Catalogue numbers run through the whole list in display order: for sale, in stock, out of stock, then sold.
   let no = 0;
   for (const c of categories) {
-    c.entries = [...c.listed, ...c.stock, ...c.sold];
+    c.entries = [...c.listed, ...c.stock, ...c.out, ...c.sold];
     for (const b of c.entries) b.no = ++no;
   }
 
-  return { books, categories, total: books.length, inStock: books.filter((b) => b.status !== "sold") };
+  return { books, categories, total: books.length, inStock: books.filter((b) => b.status === "listed" || b.status === "stock") };
 }

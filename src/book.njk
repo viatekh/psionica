@@ -26,6 +26,9 @@ eleventyComputed:
   {% if book.status == 'stock' %}
     <p class="ok big">In stock</p>
     <p>Online buying opens soon. To reserve a copy now, write to <span class="sel">{{ site.email }}</span>.</p>
+  {% elif book.status == 'out' %}
+    <p class="ns big">Out of stock</p>
+    <p>Write to <span class="sel">{{ site.email }}</span> to be told when a copy comes in.</p>
   {% elif book.status == 'sold' %}
     <p class="ns">Sold.</p>
   {% else %}
