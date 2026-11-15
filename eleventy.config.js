@@ -23,6 +23,8 @@ export default function (config) {
       : `<span class="hd-txt">${label}</span>`;
   });
 
+  config.addGlobalData("build", Date.now().toString(36));
+
   // Number for the home page filters: 0 for POA or unpriced.
   config.addFilter("num", (v) => (Number.isFinite(Number(v)) && v !== "" && v != null ? Number(v) : 0));
 

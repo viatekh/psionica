@@ -4,14 +4,14 @@
   {% for b in list %}<li class="bk {{ b.status }}" data-price="{{ b.price | num }}"{% if b.price == 'POA' %} data-poa{% endif %}><a href="{{ ('/book/' + b.id + '/') | url }}">
     <span class="c">{% if b.image %}<img src="{{ b.image | asset }}" alt="" loading="lazy">{% else %}<span class="label"><span>{{ b.title }}</span>{% if b.author %}<span class="la">{{ b.author }}</span>{% endif %}</span>{% endif %}</span>
     <span class="t">{% if b.author %}<span class="au">{{ b.author }}</span>{% endif %}<span class="ti">{{ b.title }}</span>
-    <span class="pr">{% if b.status == 'sold' %}Sold{% elif b.status == 'out' %}Wanted{% elif b.price %}{{ b.price | gbp }}{% else %}In stock{% endif %}</span></span>
+    <span class="pr">{% if b.status == 'sold' %}Sold{% elif b.status == 'out' %}Wanted{% elif b.price == 'POA' %}<span class="up">POA</span>{% elif b.price %}{{ b.price | gbp }}{% else %}In stock{% endif %}</span></span>
   </a></li>{% endfor %}
 </ul>
 {% endmacro %}
 
-{% macro huntbox(list, site, intro) %}
+{% macro huntbox(list, site) %}
 <div class="hunt-box">
-  <div class="sec-head"><h2>Hunting</h2><p>{{ intro }}</p></div>
+  <div class="sec-head"><h2>Hunting</h2></div>
   {{ shelf(list) }}
   <p class="sell">Got one? We'll buy it. Write to <span class="sel">{{ site.email }}</span> with a photo and what you'd like for it.</p>
 </div>

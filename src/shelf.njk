@@ -13,5 +13,5 @@ eleventyComputed:
   <div class="sec-head"><h1>{{ cat.name }}</h1><span class="count">{{ cat.forSale.length }} in stock</span></div>
   {% if cat.forSale.length %}{{ shelf(cat.forSale) }}{% else %}<p class="empty">Nothing on this shelf right now.</p>{% endif %}
 </section>
-{% if cat.hunting.length %}<section class="sec">{{ huntbox(cat.hunting, site, "Wanted for this shelf.") }}</section>{% endif %}
+{% if cat.hunting.length %}<section class="sec">{{ huntbox(cat.hunting, site) }}</section>{% endif %}
 {% if cat.sold.length %}<section class="sec"><div class="sec-head"><h2>Recently sold</h2></div>{{ shelf(cat.sold) }}</section>{% endif %}

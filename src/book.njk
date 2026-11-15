@@ -25,7 +25,7 @@ eleventyComputed:
       {% if book.format %}<dt>Format</dt><dd>{{ book.format | capitalize }}</dd>{% endif %}
       {% if book.condition %}<dt>Condition</dt><dd>{{ book.condition }}</dd>{% endif %}
       {% if book.isbn %}<dt>ISBN</dt><dd>{{ book.isbn }}</dd>{% endif %}
-      {% if book.sku %}<dt>Ref</dt><dd>{{ book.sku }}</dd>{% endif %}
+      {% if book.sku %}<dt>Ref</dt><dd class="up">{{ book.sku }}</dd>{% endif %}
     </dl>{% endif %}
     {% set subject = (book.title + (' (' + book.sku + ')' if book.sku else '')) | urlencode %}
     {% if book.status == 'listed' and book.buy %}

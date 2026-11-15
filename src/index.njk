@@ -10,7 +10,7 @@ layout: base.njk
 
 {% for c in inventory.categories %}{% if c.home.length %}
 <section class="sec filterable" id="{{ c.slug }}">
-  <div class="sec-head"><h2>{{ c.name }}</h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">Whole shelf &rarr;</a></div>
+  <div class="sec-head"><h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">{{ c.name }}</a></h2></div>
   {{ shelf(c.home) }}
 </section>
 {% endif %}{% endfor %}
@@ -18,13 +18,13 @@ layout: base.njk
 
 {% if inventory.hunting.length %}
 <section class="sec" id="hunting">
-  {{ huntbox(inventory.hunting, site, "What we're looking for. If it's here, we don't have it yet.") }}
+  {{ huntbox(inventory.hunting, site) }}
 </section>
 {% endif %}
 
 {% if inventory.vault.length %}
 <section class="sec" id="vault">
-  <div class="sec-head"><h2>From the vault</h2><p>The rare ones. {{ inventory.vault.length }} items, all price on application.</p></div>
+  <div class="sec-head"><h2>From the vault</h2></div>
   <div class="vault">
     <div class="fan-scroll"><div class="fan">
       {% for b in inventory.vault %}{% if b.image %}<a href="{{ ('/book/' + b.id + '/') | url }}" title="{{ b.title }}" style="--r:{{ (loop.index0 - (inventory.vault.length - 1) / 2) * 2 }}deg"><img src="{{ b.image | asset }}" alt="{{ b.title }}" loading="lazy"></a>{% endif %}{% endfor %}
