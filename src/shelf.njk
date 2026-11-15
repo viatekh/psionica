@@ -7,11 +7,10 @@ pagination:
 permalink: "/shelf/{{ cat.slug }}/"
 eleventyComputed:
   title: "{{ cat.name }}"
-  description: "{{ cat.note }}"
 ---
 {% from "card.njk" import shelf, huntbox %}
 <section class="sec first">
-  <div class="sec-head"><h1>{{ cat.name }}</h1>{% if cat.note %}<p>{{ cat.note }}</p>{% endif %}<span class="count">{{ cat.forSale.length }} in stock</span></div>
+  <div class="sec-head"><h1>{{ cat.name }}</h1><span class="count">{{ cat.forSale.length }} in stock</span></div>
   {% if cat.forSale.length %}{{ shelf(cat.forSale) }}{% else %}<p class="empty">Nothing on this shelf right now.</p>{% endif %}
 </section>
 {% if cat.hunting.length %}<section class="sec">{{ huntbox(cat.hunting, site, "Wanted for this shelf.") }}</section>{% endif %}

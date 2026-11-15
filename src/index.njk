@@ -10,7 +10,7 @@ layout: base.njk
 
 {% for c in inventory.categories %}{% if c.home.length %}
 <section class="sec filterable" id="{{ c.slug }}">
-  <div class="sec-head"><h2>{{ c.name }}</h2>{% if c.note %}<p>{{ c.note }}</p>{% endif %}<a href="{{ ('/shelf/' + c.slug + '/') | url }}">Whole shelf &rarr;</a></div>
+  <div class="sec-head"><h2>{{ c.name }}</h2><a href="{{ ('/shelf/' + c.slug + '/') | url }}">Whole shelf &rarr;</a></div>
   {{ shelf(c.home) }}
 </section>
 {% endif %}{% endfor %}

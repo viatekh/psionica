@@ -90,7 +90,6 @@ export default async function () {
       return {
         name,
         slug: slug(name),
-        note: (SHELVES.find((sh) => sh.name === name) || {}).note,
         items,
         forSale: items.filter(forSale),
         home: items.filter((b) => forSale(b) && !isVault(b)),
