@@ -2,9 +2,9 @@ import { readFile } from "node:fs/promises";
 import { parse } from "csv-parse/sync";
 
 // Published CSVs from the Sheet (File > Share > Publish to web):
-//   SHEET_CSV_URL    the "Public" tab: copies in stock, listed or sold
-//   CATALOGUE_CSV_URL  the "Public catalogue" tab: everything on the want list (title, author, section)
-// Without them, the build uses data/inventory.csv and data/catalogue.csv.
+//   SHEET_CSV_URL      the "Public" tab: copies in stock, listed or sold
+//   CATALOGUE_CSV_URL  the "Public catalogue" tab: want-list titles marked in stock or out of stock
+// Without them, the build uses data/inventory.csv and data/catalogue.csv (made by tools/sync-stock.py).
 const { SHEET_CSV_URL, CATALOGUE_CSV_URL } = process.env;
 
 const slug = (s) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -18,16 +18,15 @@ const SHELVES = [
   [/^psychedelic/i, "Psychedelics"],
   [/^earth mysteries/i, "Earth mysteries"],
   [/^art/i, "Art and visionary"],
-  [/rave|electronic/i, "Rave and electronic music"],
+  [/rave|electronic|^velocity|^masala/i, "Rave and electronic music"],
   [/cyber|sci-fi/i, "Cyberculture and sci-fi"],
   [/^sound/i, "Sound and production"],
   [/^fiction/i, "Fiction"],
-  [/^velocity/i, "Rave and electronic music"],
-  [/^masala/i, "Rave and electronic music"],
   [/^vhs|video/i, "VHS and video"],
   [/^magazine/i, "Magazines"],
 ];
 const shelfName = (section) => (SHELVES.find(([re]) => re.test(section || "")) || [null, section || "Other"])[1];
+const byTitle = (a, b) => a.title.localeCompare(b.title, "en", { numeric: true });
 
 // Drive share links become direct thumbnail URLs
 function photo(url) {
@@ -46,10 +45,20 @@ export default async function () {
     load(CATALOGUE_CSV_URL, "catalogue.csv"),
   ]);
 
+  // A page's address comes from its title and author, so it stays the same when a wanted
+  // title comes into stock, sells, and is restocked. A second copy of a title gets its SKU added.
+  const ids = new Set();
+  const pageId = (title, author, sku) => {
+    let id = slug(`${title} ${author || ""}`).slice(0, 70).replace(/-$/, "");
+    if (ids.has(id)) id += sku ? `-${sku.toLowerCase()}` : "-2";
+    ids.add(id);
+    return id;
+  };
+
   const stocked = stockRows
     .filter((r) => r.SKU && ["listed", "in stock", "sold"].includes((r.Status || "").toLowerCase()))
     .map((r) => ({
-      id: r.SKU.toLowerCase(),
+      id: pageId(r.Title, r.Author, r.SKU),
       sku: r.SKU,
       isbn: r.ISBN,
       title: r.Title,
@@ -65,17 +74,19 @@ export default async function () {
       buy: r.Stripe_Link,
     }));
 
-  // Want-list titles marked "in stock" or "out of stock" that have no priced Inventory row yet. No buy button.
+  // Want-list titles marked "in stock" or "out of stock" that have no Inventory row. No price, no buy button.
   const have = new Set(stocked.map((b) => key(b.title)));
-  const ids = new Set();
   const wanted = wantRows
     .filter((r) => r.Title && ["in stock", "out of stock"].includes((r.Status || "").toLowerCase()) && !have.has(key(r.Title)))
-    .map((r) => {
-      let id = slug(`${r.Title} ${r.Author || ""}`).slice(0, 70).replace(/-$/, "");
-      while (ids.has(id)) id += "-2";
-      ids.add(id);
-      return { id, title: r.Title, author: r.Author, category: shelfName(r.Section), status: r.Status.toLowerCase() === "in stock" ? "stock" : "out", image: r.Cover_URL };
-    });
+    .map((r) => ({
+      id: pageId(r.Title, r.Author),
+      title: r.Title,
+      author: r.Author,
+      category: shelfName(r.Section),
+      status: r.Status.toLowerCase() === "in stock" ? "stock" : "out",
+      image: r.Cover_URL,
+      blurb: (r.Notes || "").replace(/^POA when in;\s*/, ""),
+    }));
 
   const books = [...stocked, ...wanted].map((b) => ({ ...b, categorySlug: slug(b.category) }));
   const order = SHELVES.map(([, name]) => name);
@@ -85,23 +96,21 @@ export default async function () {
     .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
     .map((name) => {
       const items = books.filter((b) => b.category === name);
+      const of = (...statuses) => items.filter((b) => statuses.includes(b.status)).sort(byTitle);
       return {
         name,
         slug: slug(name),
         items,
-        listed: items.filter((b) => b.status === "listed"),
-        sold: items.filter((b) => b.status === "sold"),
-        stock: items.filter((b) => b.status === "stock").sort((a, b) => a.title.localeCompare(b.title, "en", { numeric: true })),
-        out: items.filter((b) => b.status === "out").sort((a, b) => a.title.localeCompare(b.title, "en", { numeric: true })),
+        available: of("listed", "stock").length,
+        // display order: for sale, then out of stock, then sold
+        entries: [...of("listed", "stock"), ...of("out"), ...of("sold")],
       };
     });
 
-  // Catalogue numbers run through the whole list in display order: for sale, in stock, out of stock, then sold.
-  let no = 0;
-  for (const c of categories) {
-    c.entries = [...c.listed, ...c.stock, ...c.out, ...c.sold];
-    for (const b of c.entries) b.no = ++no;
-  }
-
-  return { books, categories, total: books.length, inStock: books.filter((b) => b.status === "listed" || b.status === "stock") };
+  return {
+    books,
+    categories,
+    skus: books.filter((b) => b.sku), // for the short /p/<sku>/ addresses printed on stickers
+    inStock: books.filter((b) => b.status === "listed" || b.status === "stock"),
+  };
 }

@@ -1,0 +1,14 @@
+---
+pagination:
+  data: inventory.skus
+  size: 1
+  alias: item
+permalink: "/p/{{ item.sku | lower }}/"
+eleventyExcludeFromCollections: true
+---
+<!doctype html>
+<meta charset="utf-8">
+<title>{{ item.title }} · {{ site.name }}</title>
+<meta http-equiv="refresh" content="0; url={{ ('/book/' + item.id + '/') | url }}">
+<link rel="canonical" href="{{ site.url }}/book/{{ item.id }}/">
+<p><a href="{{ ('/book/' + item.id + '/') | url }}">{{ item.title }}</a></p>

@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% if title %}{{ title }} · {% endif %}{{ site.name }}</title>
 <meta name="description" content="{{ description or site.tagline }}">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:title" content="{{ title or site.name }}">
+<meta property="og:description" content="{{ description or site.tagline }}">
+<meta property="og:type" content="{% if book %}product{% else %}website{% endif %}">
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+{% if book and book.image %}<meta property="og:image" content="{% if book.image.startsWith('/') %}{{ site.url }}{% endif %}{{ book.image }}">{% endif %}
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
 <link rel="icon" href="{{ '/assets/favicon.svg' | url }}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
